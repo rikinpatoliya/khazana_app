@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:khazana_app/core/constants/app_constants.dart';
+import 'package:khazana_app/core/router/app_router.dart';
 import 'package:khazana_app/core/theme/app_theme.dart';
 import 'package:khazana_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:khazana_app/features/auth/presentation/screens/signup_screen.dart';
+import 'package:khazana_app/core/utils/snackbar_utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -43,14 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthErrorState) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            SnackBarUtils.showSnackBar(state.message);
           } else if (state is AuthAuthenticatedState) {
-            Navigator.pushReplacementNamed(
-              context,
-              AppConstants.dashboardRoute,
-            );
+            context.goNamed(Routes.dashboardRoute);
+          } else if (state is AuthUnauthenticatedState) {
+            context.goNamed(Routes.loginRoute);
           }
         },
         builder: (context, state) {
@@ -65,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Logo
                     SizedBox(
                       height: 120,
-                      child: Image.asset(
+                      child: SvgPicture.asset(
                         AppConstants.logoPath,
                         fit: BoxFit.contain,
                       ),
@@ -169,13 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => const SignupScreen(),
-                                    ),
-                                  );
+                                  context.goNamed(Routes.signupRoute);
                                 },
                                 child: const Text('Sign Up'),
                               ),

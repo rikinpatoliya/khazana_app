@@ -2,14 +2,6 @@ class AppConstants {
   // API Constants
   static const String baseUrl = 'https://api.example.com';
 
-  // Route Constants
-  static const String splashRoute = '/';
-  static const String loginRoute = '/login';
-  static const String signupRoute = '/signup';
-  static const String dashboardRoute = '/dashboard';
-  static const String fundDetailRoute = '/fund-detail';
-  static const String watchlistRoute = '/watchlist';
-
   // Asset Constants
   static const String logoPath = 'assets/images/logo.svg';
   static const String mutualFundsDataPath = 'assets/data/mutual_funds.json';

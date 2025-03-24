@@ -30,6 +30,12 @@ dependencies:
   # Icons and UI
   cupertino_icons: ^1.0.6
   google_fonts: ^6.1.0
+  uuid: ^4.5.1
+  flutter_svg: ^2.0.17
+  get_it: ^8.0.3
+  go_router: ^14.8.1
+  logger: ^2.5.0
+  ndialog: ^4.4.1+1
 
 dev_dependencies:
   flutter_test:

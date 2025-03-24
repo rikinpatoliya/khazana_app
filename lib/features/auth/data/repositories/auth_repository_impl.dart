@@ -1,5 +1,7 @@
 import 'package:khazana_app/core/constants/app_constants.dart';
+import 'package:khazana_app/core/resources/api_response.dart';
 import 'package:khazana_app/features/auth/data/models/user_model.dart';
+import 'package:khazana_app/features/auth/domain/exceptions/auth_exceptions.dart';
 import 'package:khazana_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -11,7 +13,7 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._supabaseClient, this._sharedPreferences);
 
   @override
-  Future<UserModel> signUp(String email, String password) async {
+  Future<ApiResponse<UserModel>> signUp(String email, String password) async {
     try {
       final response = await _supabaseClient.auth.signUp(
         email: email,
@@ -27,20 +29,22 @@ class AuthRepositoryImpl implements AuthRepository {
         id: user.id,
         email: user.email!,
         createdAt: user.createdAt,
-        lastSignInAt: user.lastSignInAt ?? DateTime.now(),
+        lastSignInAt: user.lastSignInAt ?? DateTime.now().toString(),
       );
 
       // Save user session
       await _saveUserSession(userModel);
 
-      return userModel;
-    } catch (e) {
-      throw Exception(e.toString());
+      return ApiResponse.success(userModel);
+    } on AuthApiException catch (e) {
+      return ApiResponse.error(e.message);
+    } catch (_) {
+      return ApiResponse.error('An unknown exception occurred.');
     }
   }
 
   @override
-  Future<UserModel> signIn(String email, String password) async {
+  Future<ApiResponse<UserModel>> signIn(String email, String password) async {
     try {
       final response = await _supabaseClient.auth.signInWithPassword(
         email: email,
@@ -58,46 +62,54 @@ class AuthRepositoryImpl implements AuthRepository {
         name: user.userMetadata?['name'] as String?,
         avatarUrl: user.userMetadata?['avatar_url'] as String?,
         createdAt: user.createdAt,
-        lastSignInAt: user.lastSignInAt ?? DateTime.now(),
+        lastSignInAt: user.lastSignInAt ?? DateTime.now().toString(),
       );
 
       // Save user session
       await _saveUserSession(userModel);
 
-      return userModel;
-    } catch (e) {
-      throw Exception(e.toString());
+      return ApiResponse.success(userModel);
+    } on AuthApiException catch (e) {
+      return ApiResponse.error(e.message);
+    } catch (_) {
+      return ApiResponse.error('An unknown exception occurred.');
     }
   }
 
   @override
-  Future<void> signOut() async {
+  Future<ApiResponse> signOut() async {
     try {
       await _supabaseClient.auth.signOut();
       await _clearUserSession();
-    } catch (e) {
-      throw Exception(e.toString());
+      return ApiResponse.success(null);
+    } on AuthApiException catch (e) {
+      return ApiResponse.error(e.message);
+    } catch (_) {
+      return ApiResponse.error('An unknown exception occurred.');
     }
   }
 
   @override
-  Future<UserModel?> getCurrentUser() async {
+  Future<ApiResponse<UserModel?>> getCurrentUser() async {
     try {
       final user = _supabaseClient.auth.currentUser;
       if (user == null) {
-        return null;
+        return ApiResponse.success(null);
       }
 
-      return UserModel(
+      UserModel userModel = UserModel(
         id: user.id,
         email: user.email!,
         name: user.userMetadata?['name'] as String?,
         avatarUrl: user.userMetadata?['avatar_url'] as String?,
         createdAt: user.createdAt,
-        lastSignInAt: user.lastSignInAt ?? DateTime.now(),
+        lastSignInAt: user.lastSignInAt ?? DateTime.now().toString(),
       );
-    } catch (e) {
-      throw Exception(e.toString());
+      return ApiResponse.success(userModel);
+    } on AuthApiException catch (e) {
+      return ApiResponse.error(e.message);
+    } catch (_) {
+      return ApiResponse.error('An unknown exception occurred.');
     }
   }
 

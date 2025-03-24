@@ -19,10 +19,10 @@ class UserModel {
   final String? avatarUrl;
 
   @HiveField(4)
-  final DateTime createdAt;
+  final String createdAt;
 
   @HiveField(5)
-  final DateTime lastSignInAt;
+  final String lastSignInAt;
 
   UserModel({
     required this.id,

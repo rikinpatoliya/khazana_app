@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:khazana_app/core/theme/app_theme.dart';
 import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
-import 'package:khazana_app/features/mutual_funds/domain/repositories/mutual_fund_repository.dart';
-import 'package:khazana_app/features/mutual_funds/presentation/screens/fund_detail_screen.dart';
+import 'package:khazana_app/features/mutual_funds/presentation/bloc/mutual_fund_bloc.dart';
 import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
 import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_bloc.dart';
-import 'package:shimmer/shimmer.dart';
 
 class WatchlistScreen extends StatefulWidget {
   const WatchlistScreen({super.key});
@@ -14,12 +13,24 @@ class WatchlistScreen extends StatefulWidget {
   State<WatchlistScreen> createState() => _WatchlistScreenState();
 }
 
-class _WatchlistScreenState extends State<WatchlistScreen> {
+class _WatchlistScreenState extends State<WatchlistScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final TextEditingController _newWatchlistController = TextEditingController();
+  String? _selectedWatchlistId;
+
   @override
   void initState() {
     super.initState();
-    // Load all watchlists
     context.read<WatchlistBloc>().add(WatchlistLoadAllEvent());
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _newWatchlistController.dispose();
+    super.dispose();
   }
 
   @override
@@ -27,21 +38,22 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Watchlists'),
-        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _showCreateWatchlistDialog(),
-            tooltip: 'Create Watchlist',
+            onPressed: _showCreateWatchlistDialog,
           ),
         ],
       ),
       body: BlocBuilder<WatchlistBloc, WatchlistState>(
         builder: (context, state) {
           if (state is WatchlistLoadingState) {
-            return _buildLoadingShimmer();
+            return const Center(child: CircularProgressIndicator());
           } else if (state is WatchlistLoadedState) {
-            return _buildWatchlistList(state.watchlists);
+            if (state.watchlists.isEmpty) {
+              return _buildEmptyState();
+            }
+            return _buildWatchlistContent(state.watchlists);
           } else if (state is WatchlistErrorState) {
             return Center(
               child: Text(
@@ -49,29 +61,100 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                 style: const TextStyle(color: Colors.red),
               ),
             );
-          } else {
-            return const Center(child: Text('No watchlists available'));
           }
+          return const SizedBox.shrink();
         },
       ),
     );
   }
 
-  Widget _buildLoadingShimmer() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.star_border, size: 80, color: Colors.grey),
+          const SizedBox(height: 16),
+          const Text(
+            'No watchlists yet',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Create a watchlist to track your favorite funds',
+            style: TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: _showCreateWatchlistDialog,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: const Text('Create Watchlist'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWatchlistContent(List<WatchlistModel> watchlists) {
+    if (_selectedWatchlistId == null && watchlists.isNotEmpty) {
+      _selectedWatchlistId = watchlists.first.id;
+      context.read<WatchlistBloc>().add(
+        WatchlistLoadByIdEvent(_selectedWatchlistId!),
+      );
+    }
+
+    return Column(
+      children: [
+        _buildWatchlistTabs(watchlists),
+        Expanded(
+          child:
+              _selectedWatchlistId != null
+                  ? _buildWatchlistDetails()
+                  : const Center(child: Text('Select a watchlist')),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWatchlistTabs(List<WatchlistModel> watchlists) {
+    return Container(
+      height: 50,
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListView.builder(
-        itemCount: 5,
-        padding: const EdgeInsets.all(16.0),
+        scrollDirection: Axis.horizontal,
+        itemCount: watchlists.length,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
+          final watchlist = watchlists[index];
+          final isSelected = watchlist.id == _selectedWatchlistId;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedWatchlistId = watchlist.id;
+              });
+              context.read<WatchlistBloc>().add(
+                WatchlistLoadByIdEvent(watchlist.id),
+              );
+            },
             child: Container(
-              height: 100,
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
+                color: isSelected ? AppTheme.primaryColor : Colors.grey[200],
+                borderRadius: BorderRadius.circular(25),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                watchlist.name,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black87,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
             ),
           );
@@ -80,370 +163,227 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     );
   }
 
-  Widget _buildWatchlistList(List<WatchlistModel> watchlists) {
-    if (watchlists.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.bookmark_border,
-              size: 64,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'No watchlists yet',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Create a watchlist to track your favorite funds',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => _showCreateWatchlistDialog(),
-              icon: const Icon(Icons.add),
-              label: const Text('Create Watchlist'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: watchlists.length,
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: (context, index) {
-        final watchlist = watchlists[index];
-        return _buildWatchlistCard(watchlist);
+  Widget _buildWatchlistDetails() {
+    return BlocBuilder<WatchlistBloc, WatchlistState>(
+      builder: (context, state) {
+        if (state is WatchlistDetailLoadedState) {
+          final watchlist = state.watchlist;
+          if (watchlist.fundIds.isEmpty) {
+            return _buildEmptyWatchlist(watchlist);
+          }
+          return _buildWatchlistFunds(watchlist);
+        } else if (state is WatchlistLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return const SizedBox.shrink();
       },
     );
   }
 
-  Widget _buildWatchlistCard(WatchlistModel watchlist) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      child: InkWell(
-        onTap: () {
-          _navigateToWatchlistDetail(watchlist);
-        },
-        borderRadius: BorderRadius.circular(10.0),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      watchlist.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+  Widget _buildEmptyWatchlist(WatchlistModel watchlist) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.format_list_bulleted, size: 80, color: Colors.grey),
+          const SizedBox(height: 16),
+          Text(
+            'No funds in ${watchlist.name}',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Add mutual funds to this watchlist',
+            style: TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/mutual-funds');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: const Text('Browse Mutual Funds'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWatchlistFunds(WatchlistModel watchlist) {
+    return BlocBuilder<MutualFundBloc, MutualFundState>(
+      builder: (context, state) {
+        if (state is MutualFundLoadedState) {
+          final watchlistFunds =
+              state.funds
+                  .where((fund) => watchlist.fundIds.contains(fund.id))
+                  .toList();
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: watchlistFunds.length,
+            itemBuilder: (context, index) {
+              return _buildFundCard(watchlistFunds[index], watchlist);
+            },
+          );
+        } else if (state is MutualFundLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        } else {
+          // Load mutual funds if not already loaded
+          context.read<MutualFundBloc>().add(MutualFundLoadAllEvent());
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
+  Widget _buildFundCard(MutualFundModel fund, WatchlistModel watchlist) {
+    return Dismissible(
+      key: Key('watchlist_fund_${fund.id}'),
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      direction: DismissDirection.endToStart,
+      onDismissed: (direction) {
+        context.read<WatchlistBloc>().add(
+          WatchlistRemoveFundEvent(watchlist.id, fund.id),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${fund.name} removed from watchlist'),
+            action: SnackBarAction(
+              label: 'Undo',
+              onPressed: () {
+                context.read<WatchlistBloc>().add(
+                  WatchlistAddFundEvent(watchlist.id, fund.id),
+                );
+              },
+            ),
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        elevation: 2,
+        child: InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, '/fund-detail', arguments: fund.id);
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fund.name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        _showEditWatchlistDialog(watchlist);
-                      } else if (value == 'delete') {
-                        _showDeleteWatchlistDialog(watchlist);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem<String>(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, size: 20),
-                            SizedBox(width: 8),
-                            Text('Rename'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, size: 20, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: Colors.red)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Created on ${_formatDate(watchlist.createdAt)}',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
                 ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${watchlist.fundIds.length} funds',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      fund.category,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                  ),
-                ],
-              ),
-            ],
+                    Text(
+                      fund.amc,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('NAV', style: TextStyle(fontSize: 12)),
+                        Text(
+                          '₹${fund.nav.toStringAsFixed(2)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          '1Y Returns',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        Text(
+                          '${fund.returns.oneYear.toStringAsFixed(2)}%',
+                          style: TextStyle(
+                            color:
+                                fund.returns.oneYear >= 0
+                                    ? Colors.green
+                                    : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  void _navigateToWatchlistDetail(WatchlistModel watchlist) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => WatchlistDetailScreen(watchlist: watchlist),
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
   }
 
   void _showCreateWatchlistDialog() {
-    final TextEditingController nameController = TextEditingController();
-
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Create Watchlist'),
-          content: TextField(
-            controller: nameController,
-            decoration: const InputDecoration(
-              labelText: 'Watchlist Name',
-              hintText: 'Enter a name for your watchlist',
-            ),
-            autofocus: true,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                final name = nameController.text.trim();
-                if (name.isNotEmpty) {
-                  context.read<WatchlistBloc>().add(WatchlistCreateEvent(name));
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Create'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showEditWatchlistDialog(WatchlistModel watchlist) {
-    final TextEditingController nameController = TextEditingController(text: watchlist.name);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Rename Watchlist'),
-          content: TextField(
-            controller: nameController,
-            decoration: const InputDecoration(
-              labelText: 'Watchlist Name',
-              hintText: 'Enter a new name for your watchlist',
-            ),
-            autofocus: true,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                final name = nameController.text.trim();
-                if (name.isNotEmpty) {
-                  final updatedWatchlist = WatchlistModel(
-                    id: watchlist.id,
-                    name: name,
-                    fundIds: watchlist.fundIds,
-                    createdAt: watchlist.createdAt,
-                    updatedAt: DateTime.now(),
-                  );
-                  context.read<WatchlistBloc>().add(WatchlistUpdateEvent(updatedWatchlist));
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showDeleteWatchlistDialog(WatchlistModel watchlist) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete Watchlist'),
-          content: Text(
-            'Are you sure you want to delete "${watchlist.name}"? This action cannot be undone.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                context.read<WatchlistBloc>().add(WatchlistDeleteEvent(watchlist.id));
-                Navigator.pop(context);
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class WatchlistDetailScreen extends StatefulWidget {
-  final WatchlistModel watchlist;
-
-  const WatchlistDetailScreen({super.key, required this.watchlist});
-
-  @override
-  State<WatchlistDetailScreen> createState() => _WatchlistDetailScreenState();
-}
-
-class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
-  List<MutualFundModel> _funds = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFunds();
-  }
-
-  Future<void> _loadFunds() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final mutualFundRepository = context.read<MutualFundRepository>();
-      final allFunds = await mutualFundRepository.getAllMutualFunds();
-      
-      // Filter funds that are in the watchlist
-      final watchlistFunds = allFunds.where(
-        (fund) => widget.watchlist.fundIds.contains(fund.id),
-      ).toList();
-
-      setState(() {
-        _funds = watchlistFunds;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.watchlist.name),
-        elevation: 0,
-      ),
-      body: _isLoading
-          ? _buildLoadingShimmer()
-          : _buildFundList(),
-    );
-  }
-
-  Widget _buildLoadingShimmer() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: ListView.builder(
-        itemCount: 10,
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Create New Watchlist'),
+            content: TextField(
+              controller: _newWatchlistController,
+              decoration: const InputDecoration(
+                hintText: 'Enter watchlist name',
+                border: OutlineInputBorder(),
               ),
+              autofocus: true,
             ),
-          );
-        },
-      ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _newWatchlistController.clear();
+                },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (_newWatchlistController.text.trim().isNotEmpty) {
+                    context.read<WatchlistBloc>().add(
+                      WatchlistCreateEvent(_newWatchlistController.text.trim()),
+                    );
+                    Navigator.pop(context);
+                    _newWatchlistController.clear();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Create'),
+              ),
+            ],
+          ),
     );
   }
-
-  Widget _buildFundList() {
-    if (_funds.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.bookmark_border,
-              size: 64,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'No funds in this watchlist',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Add funds to track their performance',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: _funds.length,
-      padding: const EdgeInsets.all(16.0),
+}

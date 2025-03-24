@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:khazana_app/core/constants/app_constants.dart';
+import 'package:khazana_app/core/router/app_router.dart';
 import 'package:khazana_app/core/theme/app_theme.dart';
 import 'package:khazana_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:khazana_app/core/utils/snackbar_utils.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -46,14 +50,13 @@ class _SignupScreenState extends State<SignupScreen> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthErrorState) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            SnackBarUtils.showSnackBar(state.message);
           } else if (state is AuthAuthenticatedState) {
-            Navigator.pushReplacementNamed(
-              context,
-              AppConstants.dashboardRoute,
-            );
+            context.goNamed(Routes.dashboardRoute);
+            // Navigator.pushReplacementNamed(
+            //   context,
+            //   AppConstants.dashboardRoute,
+            // );
           }
         },
         builder: (context, state) {
@@ -68,7 +71,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     // Logo
                     SizedBox(
                       height: 100,
-                      child: Image.asset(
+                      child: SvgPicture.asset(
                         AppConstants.logoPath,
                         fit: BoxFit.contain,
                       ),

@@ -21,8 +21,8 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       email: fields[1] as String,
       name: fields[2] as String?,
       avatarUrl: fields[3] as String?,
-      createdAt: fields[4] as DateTime,
-      lastSignInAt: fields[5] as DateTime,
+      createdAt: fields[4] as String,
+      lastSignInAt: fields[5] as String,
     );
   }
 
@@ -64,8 +64,8 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       email: json['email'] as String,
       name: json['name'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      lastSignInAt: DateTime.parse(json['lastSignInAt'] as String),
+      createdAt: json['createdAt'] as String,
+      lastSignInAt: json['lastSignInAt'] as String,
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -73,6 +73,6 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'email': instance.email,
       'name': instance.name,
       'avatarUrl': instance.avatarUrl,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'lastSignInAt': instance.lastSignInAt.toIso8601String(),
+      'createdAt': instance.createdAt,
+      'lastSignInAt': instance.lastSignInAt,
     };

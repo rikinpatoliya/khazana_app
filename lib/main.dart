@@ -2,22 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:khazana_app/core/constants/app_constants.dart';
+import 'package:khazana_app/core/di/service_locator.dart';
+import 'package:khazana_app/core/router/app_router.dart';
 import 'package:khazana_app/core/theme/app_theme.dart';
+import 'package:khazana_app/core/utils/snackbar_utils.dart';
 import 'package:khazana_app/features/auth/data/models/user_model.dart';
-import 'package:khazana_app/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:khazana_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:khazana_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:khazana_app/features/auth/presentation/screens/login_screen.dart';
-import 'package:khazana_app/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:khazana_app/features/mutual_funds/data/repositories/mutual_fund_repository_impl.dart';
-import 'package:khazana_app/features/mutual_funds/domain/repositories/mutual_fund_repository.dart';
 import 'package:khazana_app/features/mutual_funds/presentation/bloc/mutual_fund_bloc.dart';
 import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
-import 'package:khazana_app/features/watchlist/data/repositories/watchlist_repository_impl.dart';
-import 'package:khazana_app/features/watchlist/domain/repositories/watchlist_repository.dart';
 import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_bloc.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 void main() async {
@@ -25,8 +18,10 @@ void main() async {
 
   // Initialize Supabase
   await supabase.Supabase.initialize(
-    url: 'YOUR_SUPABASE_URL', // Replace with your Supabase URL
-    anonKey: 'YOUR_SUPABASE_ANON_KEY', // Replace with your Supabase Anon Key
+    url:
+        'https://fnekhxxwmrspndkmqrow.supabase.co', // Replace with your Supabase URL
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuZWtoeHh3bXJzcG5ka21xcm93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MDU1MTUsImV4cCI6MjA1ODM4MTUxNX0.EkScuPnYGx2dLE6EVIrcBZxNyFrB7X0cl_0TwAn6m5w', // Replace with your Supabase Anon Key
   );
 
   // Initialize Hive
@@ -40,75 +35,42 @@ void main() async {
   await Hive.openBox<WatchlistModel>(AppConstants.watchlistBox);
   await Hive.openBox<UserModel>(AppConstants.userBox);
 
-  // Get SharedPreferences instance
-  final sharedPreferences = await SharedPreferences.getInstance();
+  // Initialize service locator
+  await initServiceLocator();
 
-  runApp(MyApp(sharedPreferences: sharedPreferences));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final SharedPreferences sharedPreferences;
-
-  const MyApp({super.key, required this.sharedPreferences});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Get Supabase client
-    final supabaseClient = supabase.Supabase.instance.client;
-
-    // Get Hive boxes
-    final watchlistBox = Hive.box<WatchlistModel>(AppConstants.watchlistBox);
-
-    // Initialize repositories
-    final AuthRepository authRepository = AuthRepositoryImpl(
-      supabaseClient,
-      sharedPreferences,
-    );
-
-    final MutualFundRepository mutualFundRepository =
-        MutualFundRepositoryImpl();
-
-    final WatchlistRepository watchlistRepository = WatchlistRepositoryImpl(
-      watchlistBox,
-    );
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create:
-              (context) =>
-                  AuthBloc(authRepository)..add(AuthCheckStatusEvent()),
+          create: (context) => sl<AuthBloc>()..add(AuthCheckStatusEvent()),
         ),
-        BlocProvider<MutualFundBloc>(
-          create: (context) => MutualFundBloc(mutualFundRepository),
-        ),
-        BlocProvider<WatchlistBloc>(
-          create: (context) => WatchlistBloc(watchlistRepository),
-        ),
+        BlocProvider<MutualFundBloc>(create: (context) => sl<MutualFundBloc>()),
+        BlocProvider<WatchlistBloc>(create: (context) => sl<WatchlistBloc>()),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
+        scaffoldMessengerKey: SnackBarUtils.scaffoldMessengerKey,
         title: 'Khazana - Mutual Fund Analytics',
         theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
-        initialRoute: AppConstants.splashRoute,
-        routes: {
-          AppConstants.splashRoute:
-              (context) => BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  if (state is AuthLoadingState) {
-                    return const Scaffold(
-                      body: Center(child: CircularProgressIndicator()),
-                    );
-                  } else if (state is AuthAuthenticatedState) {
-                    return const DashboardScreen();
-                  } else {
-                    return const LoginScreen();
-                  }
-                },
-              ),
-          AppConstants.loginRoute: (context) => const LoginScreen(),
-          AppConstants.dashboardRoute: (context) => const DashboardScreen(),
-        },
+        routerConfig: appRouter,
+        /*  builder:
+            (context, child) => BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                if (state is AuthLoadingState) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                return child!;
+              },
+            ), */
       ),
     );
   }

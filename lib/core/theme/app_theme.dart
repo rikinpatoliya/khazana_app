@@ -35,6 +35,7 @@ class AppTheme {
       surface: cardColor,
     ),
     scaffoldBackgroundColor: backgroundColor,
+    snackBarTheme: SnackBarThemeData(backgroundColor: Colors.black),
     cardTheme: const CardTheme(
       color: cardColor,
       elevation: 2,

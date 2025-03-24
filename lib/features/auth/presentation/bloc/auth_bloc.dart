@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:khazana_app/core/resources/api_response.dart';
 import 'package:khazana_app/features/auth/data/models/user_model.dart';
 import 'package:khazana_app/features/auth/domain/repositories/auth_repository.dart';
 
@@ -86,11 +87,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final isLoggedIn = await _authRepository.isLoggedIn();
       if (isLoggedIn) {
-        final user = await _authRepository.getCurrentUser();
-        if (user != null) {
-          emit(AuthAuthenticatedState(user));
-        } else {
-          emit(AuthUnauthenticatedState());
+        final apiResponse = await _authRepository.getCurrentUser();
+        if (apiResponse is ApiResponseSuccess<UserModel?>) {
+          var user = apiResponse.value;
+          if (user != null) {
+            emit(AuthAuthenticatedState(user));
+          } else {
+            emit(AuthUnauthenticatedState());
+          }
+        } else if (apiResponse is ApiResponseError) {
+          emit(AuthErrorState(apiResponse.message));
         }
       } else {
         emit(AuthUnauthenticatedState());
@@ -103,8 +109,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onSignUp(AuthSignUpEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoadingState());
     try {
-      final user = await _authRepository.signUp(event.email, event.password);
-      emit(AuthAuthenticatedState(user));
+      final apiResponse = await _authRepository.signUp(
+        event.email,
+        event.password,
+      );
+      if (apiResponse is ApiResponseSuccess<UserModel>) {
+        emit(AuthAuthenticatedState(apiResponse.value));
+      } else if (apiResponse is ApiResponseError) {
+        emit(AuthErrorState(apiResponse.message));
+      }
     } catch (e) {
       emit(AuthErrorState(e.toString()));
     }
@@ -113,8 +126,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onSignIn(AuthSignInEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoadingState());
     try {
-      final user = await _authRepository.signIn(event.email, event.password);
-      emit(AuthAuthenticatedState(user));
+      final apiResponse = await _authRepository.signIn(
+        event.email,
+        event.password,
+      );
+      if (apiResponse is ApiResponseSuccess<UserModel>) {
+        emit(AuthAuthenticatedState(apiResponse.value));
+      } else if (apiResponse is ApiResponseError) {
+        emit(AuthErrorState(apiResponse.message));
+      }
     } catch (e) {
       emit(AuthErrorState(e.toString()));
     }
@@ -126,8 +146,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoadingState());
     try {
-      await _authRepository.signOut();
-      emit(AuthUnauthenticatedState());
+      var apiResponse = await _authRepository.signOut();
+      if (apiResponse is ApiResponseSuccess) {
+        emit(AuthUnauthenticatedState());
+      } else if (apiResponse is ApiResponseError) {
+        emit(AuthErrorState(apiResponse.message));
+      }
     } catch (e) {
       emit(AuthErrorState(e.toString()));
     }
