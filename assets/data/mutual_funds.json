@@ -8,6 +8,10 @@
         "aum": 21500.67,
         "expense_ratio": 1.75,
         "risk_level": "Moderate",
+        "invested_amount": 100000,
+        "current_value": 116955.48,
+        "total_gain": 16955.48,
+        "total_change_percent": 16.96,
         "returns": {
             "1y": 12.5,
             "3y": 15.2,
@@ -61,6 +65,30 @@
             {
                 "date": "2023-12-01",
                 "value": 890.45
+            },
+            {
+                "date": "2024-01-01",
+                "value": 905.20
+            },
+            {
+                "date": "2024-02-01",
+                "value": 915.75
+            },
+            {
+                "date": "2024-03-01",
+                "value": 925.40
+            },
+            {
+                "date": "2024-04-01",
+                "value": 930.65
+            },
+            {
+                "date": "2024-05-01",
+                "value": 940.30
+            },
+            {
+                "date": "2024-06-01",
+                "value": 935.85
             }
         ]
     },
@@ -73,6 +101,10 @@
         "aum": 18750.32,
         "expense_ratio": 1.82,
         "risk_level": "Moderate",
+        "invested_amount": 75000,
+        "current_value": 85125.30,
+        "total_gain": 10125.30,
+        "total_change_percent": 13.50,
         "returns": {
             "1y": 11.8,
             "3y": 14.5,
@@ -126,6 +158,30 @@
             {
                 "date": "2023-12-01",
                 "value": 56.78
+            },
+            {
+                "date": "2024-01-01",
+                "value": 57.45
+            },
+            {
+                "date": "2024-02-01",
+                "value": 58.20
+            },
+            {
+                "date": "2024-03-01",
+                "value": 59.10
+            },
+            {
+                "date": "2024-04-01",
+                "value": 58.75
+            },
+            {
+                "date": "2024-05-01",
+                "value": 59.85
+            },
+            {
+                "date": "2024-06-01",
+                "value": 60.25
             }
         ]
     },
@@ -138,6 +194,10 @@
         "aum": 12450.89,
         "expense_ratio": 1.95,
         "risk_level": "High",
+        "invested_amount": 85000,
+        "current_value": 98725.50,
+        "total_gain": 13725.50,
+        "total_change_percent": 16.15,
         "returns": {
             "1y": 14.2,
             "3y": 18.7,
@@ -191,6 +251,30 @@
             {
                 "date": "2023-12-01",
                 "value": 72.35
+            },
+            {
+                "date": "2024-01-01",
+                "value": 73.80
+            },
+            {
+                "date": "2024-02-01",
+                "value": 75.25
+            },
+            {
+                "date": "2024-03-01",
+                "value": 76.40
+            },
+            {
+                "date": "2024-04-01",
+                "value": 77.15
+            },
+            {
+                "date": "2024-05-01",
+                "value": 78.50
+            },
+            {
+                "date": "2024-06-01",
+                "value": 79.20
             }
         ]
     },
@@ -203,6 +287,10 @@
         "aum": 19870.45,
         "expense_ratio": 1.68,
         "risk_level": "Moderate to High",
+        "invested_amount": 120000,
+        "current_value": 142560.80,
+        "total_gain": 22560.80,
+        "total_change_percent": 18.80,
         "returns": {
             "1y": 15.8,
             "3y": 19.2,
@@ -256,6 +344,30 @@
             {
                 "date": "2023-12-01",
                 "value": 105.67
+            },
+            {
+                "date": "2024-01-01",
+                "value": 108.25
+            },
+            {
+                "date": "2024-02-01",
+                "value": 110.40
+            },
+            {
+                "date": "2024-03-01",
+                "value": 112.75
+            },
+            {
+                "date": "2024-04-01",
+                "value": 114.30
+            },
+            {
+                "date": "2024-05-01",
+                "value": 116.85
+            },
+            {
+                "date": "2024-06-01",
+                "value": 118.20
             }
         ]
     },
@@ -268,6 +380,10 @@
         "aum": 9875.23,
         "expense_ratio": 1.55,
         "risk_level": "Moderate to High",
+        "invested_amount": 90000,
+        "current_value": 105750.60,
+        "total_gain": 15750.60,
+        "total_change_percent": 17.50,
         "returns": {
             "1y": 16.5,
             "3y": 20.1,
@@ -321,6 +437,30 @@
             {
                 "date": "2023-12-01",
                 "value": 48.92
+            },
+            {
+                "date": "2024-01-01",
+                "value": 50.15
+            },
+            {
+                "date": "2024-02-01",
+                "value": 51.40
+            },
+            {
+                "date": "2024-03-01",
+                "value": 52.75
+            },
+            {
+                "date": "2024-04-01",
+                "value": 53.90
+            },
+            {
+                "date": "2024-05-01",
+                "value": 54.65
+            },
+            {
+                "date": "2024-06-01",
+                "value": 55.30
             }
         ]
     },
@@ -333,6 +473,10 @@
         "aum": 7650.78,
         "expense_ratio": 2.05,
         "risk_level": "High",
+        "invested_amount": 110000,
+        "current_value": 132550.40,
+        "total_gain": 22550.40,
+        "total_change_percent": 20.50,
         "returns": {
             "1y": 18.2,
             "3y": 22.5,
@@ -386,6 +530,30 @@
             {
                 "date": "2023-12-01",
                 "value": 85.23
+            },
+            {
+                "date": "2024-01-01",
+                "value": 87.45
+            },
+            {
+                "date": "2024-02-01",
+                "value": 89.80
+            },
+            {
+                "date": "2024-03-01",
+                "value": 92.15
+            },
+            {
+                "date": "2024-04-01",
+                "value": 94.30
+            },
+            {
+                "date": "2024-05-01",
+                "value": 96.75
+            },
+            {
+                "date": "2024-06-01",
+                "value": 98.40
             }
         ]
     },
@@ -398,6 +566,10 @@
         "aum": 8920.56,
         "expense_ratio": 1.78,
         "risk_level": "Moderate to High",
+        "invested_amount": 95000,
+        "current_value": 108250.50,
+        "total_gain": 13250.50,
+        "total_change_percent": 13.95,
         "returns": {
             "1y": 13.8,
             "3y": 16.5,
@@ -451,6 +623,30 @@
             {
                 "date": "2023-12-01",
                 "value": 38.75
+            },
+            {
+                "date": "2024-01-01",
+                "value": 39.40
+            },
+            {
+                "date": "2024-02-01",
+                "value": 40.15
+            },
+            {
+                "date": "2024-03-01",
+                "value": 41.20
+            },
+            {
+                "date": "2024-04-01",
+                "value": 41.85
+            },
+            {
+                "date": "2024-05-01",
+                "value": 42.30
+            },
+            {
+                "date": "2024-06-01",
+                "value": 42.95
             }
         ]
     },
@@ -463,6 +659,10 @@
         "aum": 15670.89,
         "expense_ratio": 1.85,
         "risk_level": "Moderate",
+        "invested_amount": 130000,
+        "current_value": 152500.75,
+        "total_gain": 22500.75,
+        "total_change_percent": 17.31,
         "returns": {
             "1y": 14.5,
             "3y": 17.2,
@@ -516,6 +716,30 @@
             {
                 "date": "2023-12-01",
                 "value": 210.45
+            },
+            {
+                "date": "2024-01-01",
+                "value": 214.20
+            },
+            {
+                "date": "2024-02-01",
+                "value": 218.75
+            },
+            {
+                "date": "2024-03-01",
+                "value": 222.40
+            },
+            {
+                "date": "2024-04-01",
+                "value": 225.65
+            },
+            {
+                "date": "2024-05-01",
+                "value": 228.30
+            },
+            {
+                "date": "2024-06-01",
+                "value": 230.85
             }
         ]
     },
@@ -528,6 +752,10 @@
         "aum": 14250.67,
         "expense_ratio": 1.88,
         "risk_level": "Moderate to High",
+        "invested_amount": 120000,
+        "current_value": 148500.50,
+        "total_gain": 28500.50,
+        "total_change_percent": 22.13,
         "returns": {
             "1y": 15.3,
             "3y": 18.5,
@@ -581,6 +809,30 @@
             {
                 "date": "2023-12-01",
                 "value": 320.78
+            },
+            {
+                "date": "2024-01-01",
+                "value": 325.45
+            },
+            {
+                "date": "2024-02-01",
+                "value": 330.20
+            },
+            {
+                "date": "2024-03-01",
+                "value": 335.75
+            },
+            {
+                "date": "2024-04-01",
+                "value": 340.30
+            },
+            {
+                "date": "2024-05-01",
+                "value": 345.85
+            },
+            {
+                "date": "2024-06-01",
+                "value": 350.40
             }
         ]
     },
@@ -593,6 +845,10 @@
         "aum": 8750.32,
         "expense_ratio": 2.10,
         "risk_level": "High",
+        "invested_amount": 110000,
+        "current_value": 132550.40,
+        "total_gain": 22550.40,
+        "total_change_percent": 20.50,
         "returns": {
             "1y": 19.5,
             "3y": 24.2,
@@ -646,6 +902,30 @@
             {
                 "date": "2023-12-01",
                 "value": 92.45
+            },
+            {
+                "date": "2024-01-01",
+                "value": 94.80
+            },
+            {
+                "date": "2024-02-01",
+                "value": 97.25
+            },
+            {
+                "date": "2024-03-01",
+                "value": 99.60
+            },
+            {
+                "date": "2024-04-01",
+                "value": 102.15
+            },
+            {
+                "date": "2024-05-01",
+                "value": 104.50
+            },
+            {
+                "date": "2024-06-01",
+                "value": 106.75
             }
         ]
     },
@@ -658,6 +938,10 @@
         "aum": 6850.45,
         "expense_ratio": 1.92,
         "risk_level": "High",
+        "invested_amount": 120000,
+        "current_value": 148500.50,
+        "total_gain": 28500.50,
+        "total_change_percent": 22.13,
         "returns": {
             "1y": 22.5,
             "3y": 28.7,
@@ -711,6 +995,30 @@
             {
                 "date": "2023-12-01",
                 "value": 45.67
+            },
+            {
+                "date": "2024-01-01",
+                "value": 47.25
+            },
+            {
+                "date": "2024-02-01",
+                "value": 48.90
+            },
+            {
+                "date": "2024-03-01",
+                "value": 50.45
+            },
+            {
+                "date": "2024-04-01",
+                "value": 52.10
+            },
+            {
+                "date": "2024-05-01",
+                "value": 53.75
+            },
+            {
+                "date": "2024-06-01",
+                "value": 55.30
             }
         ]
     },
@@ -723,6 +1031,10 @@
         "aum": 11250.67,
         "expense_ratio": 1.85,
         "risk_level": "High",
+        "invested_amount": 100000,
+        "current_value": 118500.60,
+        "total_gain": 18500.60,
+        "total_change_percent": 18.50,
         "returns": {
             "1y": 16.8,
             "3y": 19.5,
@@ -776,6 +1088,30 @@
             {
                 "date": "2023-12-01",
                 "value": 1250.89
+            },
+            {
+                "date": "2024-01-01",
+                "value": 1270.45
+            },
+            {
+                "date": "2024-02-01",
+                "value": 1290.20
+            },
+            {
+                "date": "2024-03-01",
+                "value": 1310.75
+            },
+            {
+                "date": "2024-04-01",
+                "value": 1325.30
+            },
+            {
+                "date": "2024-05-01",
+                "value": 1340.85
+            },
+            {
+                "date": "2024-06-01",
+                "value": 1355.40
             }
         ]
     },
@@ -788,6 +1124,10 @@
         "aum": 9850.32,
         "expense_ratio": 1.72,
         "risk_level": "Moderate",
+        "invested_amount": 85000,
+        "current_value": 98250.40,
+        "total_gain": 13250.40,
+        "total_change_percent": 15.59,
         "returns": {
             "1y": 13.2,
             "3y": 16.5,
@@ -853,6 +1193,10 @@
         "aum": 10250.45,
         "expense_ratio": 1.80,
         "risk_level": "Moderate to High",
+        "invested_amount": 105000,
+        "current_value": 125750.40,
+        "total_gain": 20750.40,
+        "total_change_percent": 19.76,
         "returns": {
             "1y": 15.5,
             "3y": 18.2,
@@ -918,6 +1262,10 @@
         "aum": 14750.67,
         "expense_ratio": 0.45,
         "risk_level": "Moderate",
+        "invested_amount": 150000,
+        "current_value": 172500.25,
+        "total_gain": 22500.25,
+        "total_change_percent": 15.00,
         "returns": {
             "1y": 12.8,
             "3y": 15.5,
@@ -983,6 +1331,10 @@
         "aum": 7850.32,
         "expense_ratio": 0.55,
         "risk_level": "High",
+        "invested_amount": 140000,
+        "current_value": 178500.25,
+        "total_gain": 38500.25,
+        "total_change_percent": 27.50,
         "returns": {
             "1y": 24.5,
             "3y": 30.2,

@@ -14,6 +14,7 @@ class AppConstants {
   static const String userTokenKey = 'user_token';
   static const String userIdKey = 'user_id';
   static const String isLoggedInKey = 'is_logged_in';
+  static const String themeModeKey = 'theme_mode';
 
   // Error Messages
   static const String networkErrorMessage =

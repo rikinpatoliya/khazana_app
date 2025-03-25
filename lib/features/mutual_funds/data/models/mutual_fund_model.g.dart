@@ -16,6 +16,10 @@ MutualFundModel _$MutualFundModelFromJson(Map<String, dynamic> json) =>
       aum: (json['aum'] as num).toDouble(),
       expenseRatio: (json['expense_ratio'] as num).toDouble(),
       riskLevel: json['risk_level'] as String,
+      currentValue: (json['current_value'] as num).toDouble(),
+      investedAmount: (json['invested_amount'] as num).toDouble(),
+      totalGain: (json['total_gain'] as num).toDouble(),
+      totalChangePercent: (json['total_change_percent'] as num).toDouble(),
       returns: Returns.fromJson(json['returns'] as Map<String, dynamic>),
       navHistory: (json['nav_history'] as List<dynamic>)
           .map((e) => NavHistory.fromJson(e as Map<String, dynamic>))
@@ -32,6 +36,10 @@ Map<String, dynamic> _$MutualFundModelToJson(MutualFundModel instance) =>
       'aum': instance.aum,
       'expense_ratio': instance.expenseRatio,
       'risk_level': instance.riskLevel,
+      'invested_amount': instance.investedAmount,
+      'current_value': instance.currentValue,
+      'total_gain': instance.totalGain,
+      'total_change_percent': instance.totalChangePercent,
       'returns': instance.returns.toJson(),
       'nav_history': instance.navHistory.map((e) => e.toJson()).toList(),
     };

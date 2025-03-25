@@ -5,6 +5,7 @@ import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.
 import 'package:khazana_app/features/mutual_funds/presentation/bloc/mutual_fund_bloc.dart';
 import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
 import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_bloc.dart';
+import 'package:khazana_app/features/watchlist/presentation/screens/add_funds_to_watchlist_screen.dart';
 
 class WatchlistScreen extends StatefulWidget {
   const WatchlistScreen({super.key});
@@ -15,20 +16,18 @@ class WatchlistScreen extends StatefulWidget {
 
 class _WatchlistScreenState extends State<WatchlistScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
   final TextEditingController _newWatchlistController = TextEditingController();
   String? _selectedWatchlistId;
 
   @override
   void initState() {
     super.initState();
-    context.read<WatchlistBloc>().add(WatchlistLoadAllEvent());
-    _tabController = TabController(length: 2, vsync: this);
+    context.read<WatchListBloc>().add(WatchListLoadAllEvent());
+    context.read<MutualFundBloc>().add(MutualFundLoadAllEvent());
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     _newWatchlistController.dispose();
     super.dispose();
   }
@@ -45,26 +44,36 @@ class _WatchlistScreenState extends State<WatchlistScreen>
           ),
         ],
       ),
-      body: BlocBuilder<WatchlistBloc, WatchlistState>(
-        builder: (context, state) {
-          if (state is WatchlistLoadingState) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is WatchlistLoadedState) {
-            if (state.watchlists.isEmpty) {
-              return _buildEmptyState();
-            }
-            return _buildWatchlistContent(state.watchlists);
-          } else if (state is WatchlistErrorState) {
-            return Center(
-              child: Text(
-                'Error: ${state.message}',
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-          return const SizedBox.shrink();
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<WatchListBloc>().add(WatchListLoadAllEvent());
         },
+        child: _buildBody(context),
       ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return BlocBuilder<WatchListBloc, WatchListState>(
+      builder: (context, state) {
+        if (state is WatchListLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is WatchListLoadedState) {
+          if (state.watchLists.isEmpty) {
+            return _buildEmptyState();
+          }
+
+          return _buildWatchlistContent(state.watchLists);
+        } else if (state is WatchListErrorState) {
+          return Center(
+            child: Text(
+              'Error: ${state.message}',
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 
@@ -88,7 +97,7 @@ class _WatchlistScreenState extends State<WatchlistScreen>
           ElevatedButton(
             onPressed: _showCreateWatchlistDialog,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
+              backgroundColor: AppTheme.blueColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
@@ -99,62 +108,97 @@ class _WatchlistScreenState extends State<WatchlistScreen>
     );
   }
 
-  Widget _buildWatchlistContent(List<WatchlistModel> watchlists) {
+  Widget _buildWatchlistContent(List<WatchListModel> watchlists) {
+    if (_selectedWatchlistId != null) {
+      bool watchlistExists = watchlists.any(
+        (watchlist) => watchlist.id == _selectedWatchlistId,
+      );
+      if (!watchlistExists) {
+        _selectedWatchlistId =
+            null; // Reset if the selected watchlist no longer exists
+      }
+    }
+
+    // Set the first watchlist as selected if none is selected and the list is not empty
     if (_selectedWatchlistId == null && watchlists.isNotEmpty) {
       _selectedWatchlistId = watchlists.first.id;
-      context.read<WatchlistBloc>().add(
-        WatchlistLoadByIdEvent(_selectedWatchlistId!),
+      context.read<WatchListBloc>().add(
+        WatchListLoadByIdEvent(_selectedWatchlistId!),
       );
     }
 
     return Column(
       children: [
         _buildWatchlistTabs(watchlists),
+
         Expanded(
           child:
               _selectedWatchlistId != null
                   ? _buildWatchlistDetails()
-                  : const Center(child: Text('Select a watchlist')),
+                  : const Center(
+                    child: Text(
+                      'Select a watchlist',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
         ),
       ],
     );
   }
 
-  Widget _buildWatchlistTabs(List<WatchlistModel> watchlists) {
+  Widget _buildWatchlistTabs(List<WatchListModel> watchLists) {
     return Container(
       height: 50,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: watchlists.length,
+        itemCount: watchLists.length,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemBuilder: (context, index) {
-          final watchlist = watchlists[index];
-          final isSelected = watchlist.id == _selectedWatchlistId;
+          final watchList = watchLists[index];
+          final isSelected = watchList.id == _selectedWatchlistId;
 
           return GestureDetector(
             onTap: () {
               setState(() {
-                _selectedWatchlistId = watchlist.id;
+                _selectedWatchlistId = watchList.id;
               });
-              context.read<WatchlistBloc>().add(
-                WatchlistLoadByIdEvent(watchlist.id),
+              context.read<WatchListBloc>().add(
+                WatchListLoadByIdEvent(watchList.id),
               );
             },
+
             child: Container(
               margin: const EdgeInsets.only(right: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.primaryColor : Colors.grey[200],
-                borderRadius: BorderRadius.circular(25),
+                color: isSelected ? AppTheme.blueColor : Colors.grey[200],
+                borderRadius: BorderRadius.circular(80),
               ),
               alignment: Alignment.center,
-              child: Text(
-                watchlist.name,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black87,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    watchList.name,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black87,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  GestureDetector(
+                    onTap: () {
+                      _showDeleteWatchlistDialog(watchList);
+                    },
+                    child: Icon(
+                      Icons.close,
+                      size: 16,
+                      color: isSelected ? Colors.white : Colors.black54,
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -164,15 +208,48 @@ class _WatchlistScreenState extends State<WatchlistScreen>
   }
 
   Widget _buildWatchlistDetails() {
-    return BlocBuilder<WatchlistBloc, WatchlistState>(
+    return BlocBuilder<WatchListBloc, WatchListState>(
       builder: (context, state) {
-        if (state is WatchlistDetailLoadedState) {
-          final watchlist = state.watchlist;
+        if (state is WatchListDetailLoadedState) {
+          final watchlist = state.watchList;
           if (watchlist.fundIds.isEmpty) {
             return _buildEmptyWatchlist(watchlist);
           }
-          return _buildWatchlistFunds(watchlist);
-        } else if (state is WatchlistLoadingState) {
+          return Column(
+            children: [
+              // Add search bar for searching and adding funds
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: InkWell(
+                  onTap: () {
+                    _showAddMutualFundsDialog(watchlist);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.grey[600]),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Search & add mutual funds',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(child: _buildWatchlistFunds(watchlist)),
+            ],
+          );
+        } else if (state is WatchListLoadingState) {
           return const Center(child: CircularProgressIndicator());
         }
         return const SizedBox.shrink();
@@ -180,7 +257,7 @@ class _WatchlistScreenState extends State<WatchlistScreen>
     );
   }
 
-  Widget _buildEmptyWatchlist(WatchlistModel watchlist) {
+  Widget _buildEmptyWatchlist(WatchListModel watchlist) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -199,21 +276,21 @@ class _WatchlistScreenState extends State<WatchlistScreen>
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/mutual-funds');
+              _showAddMutualFundsDialog(watchlist);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
+              backgroundColor: AppTheme.blueColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: const Text('Browse Mutual Funds'),
+            child: const Text('Add Mutual Funds'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildWatchlistFunds(WatchlistModel watchlist) {
+  Widget _buildWatchlistFunds(WatchListModel watchlist) {
     return BlocBuilder<MutualFundBloc, MutualFundState>(
       builder: (context, state) {
         if (state is MutualFundLoadedState) {
@@ -240,7 +317,7 @@ class _WatchlistScreenState extends State<WatchlistScreen>
     );
   }
 
-  Widget _buildFundCard(MutualFundModel fund, WatchlistModel watchlist) {
+  Widget _buildFundCard(MutualFundModel fund, WatchListModel watchlist) {
     return Dismissible(
       key: Key('watchlist_fund_${fund.id}'),
       background: Container(
@@ -251,8 +328,8 @@ class _WatchlistScreenState extends State<WatchlistScreen>
       ),
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
-        context.read<WatchlistBloc>().add(
-          WatchlistRemoveFundEvent(watchlist.id, fund.id),
+        context.read<WatchListBloc>().add(
+          WatchListRemoveFundEvent(watchlist.id, fund.id),
         );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -260,8 +337,8 @@ class _WatchlistScreenState extends State<WatchlistScreen>
             action: SnackBarAction(
               label: 'Undo',
               onPressed: () {
-                context.read<WatchlistBloc>().add(
-                  WatchlistAddFundEvent(watchlist.id, fund.id),
+                context.read<WatchListBloc>().add(
+                  WatchListAddFundEvent(watchlist.id, fund.id),
                 );
               },
             ),
@@ -369,15 +446,15 @@ class _WatchlistScreenState extends State<WatchlistScreen>
               ElevatedButton(
                 onPressed: () {
                   if (_newWatchlistController.text.trim().isNotEmpty) {
-                    context.read<WatchlistBloc>().add(
-                      WatchlistCreateEvent(_newWatchlistController.text.trim()),
+                    context.read<WatchListBloc>().add(
+                      WatchListCreateEvent(_newWatchlistController.text.trim()),
                     );
                     Navigator.pop(context);
                     _newWatchlistController.clear();
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
                 ),
                 child: const Text('Create'),
@@ -385,5 +462,60 @@ class _WatchlistScreenState extends State<WatchlistScreen>
             ],
           ),
     );
+  }
+
+  void _showDeleteWatchlistDialog(WatchListModel watchlist) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Watchlist'),
+            content: Text(
+              'Are you sure you want to delete "${watchlist.name}"?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<WatchListBloc>().add(
+                    WatchListDeleteEvent(watchlist.id),
+                  );
+                  if (_selectedWatchlistId == watchlist.id) {
+                    setState(() {
+                      _selectedWatchlistId = null;
+                    });
+                  }
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${watchlist.name} deleted')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showAddMutualFundsDialog(WatchListModel watchlist) {
+    // Navigate to the new screen for adding funds to watchlist
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddFundsToWatchlistScreen(watchlist: watchlist),
+      ),
+    ).then((_) {
+      // Refresh the watchlist when returning from the add funds screen
+      context.read<WatchListBloc>().add(WatchListLoadByIdEvent(watchlist.id));
+    });
   }
 }

@@ -6,17 +6,17 @@ part of 'watchlist_model.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class WatchlistModelAdapter extends TypeAdapter<WatchlistModel> {
+class WatchListModelAdapter extends TypeAdapter<WatchListModel> {
   @override
   final int typeId = 1;
 
   @override
-  WatchlistModel read(BinaryReader reader) {
+  WatchListModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return WatchlistModel(
+    return WatchListModel(
       id: fields[0] as String,
       name: fields[1] as String,
       fundIds: (fields[2] as List).cast<String>(),
@@ -26,7 +26,7 @@ class WatchlistModelAdapter extends TypeAdapter<WatchlistModel> {
   }
 
   @override
-  void write(BinaryWriter writer, WatchlistModel obj) {
+  void write(BinaryWriter writer, WatchListModel obj) {
     writer
       ..writeByte(5)
       ..writeByte(0)
@@ -47,7 +47,7 @@ class WatchlistModelAdapter extends TypeAdapter<WatchlistModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is WatchlistModelAdapter &&
+      other is WatchListModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -56,8 +56,8 @@ class WatchlistModelAdapter extends TypeAdapter<WatchlistModel> {
 // JsonSerializableGenerator
 // **************************************************************************
 
-WatchlistModel _$WatchlistModelFromJson(Map<String, dynamic> json) =>
-    WatchlistModel(
+WatchListModel _$WatchListModelFromJson(Map<String, dynamic> json) =>
+    WatchListModel(
       id: json['id'] as String,
       name: json['name'] as String,
       fundIds:
@@ -66,7 +66,7 @@ WatchlistModel _$WatchlistModelFromJson(Map<String, dynamic> json) =>
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
 
-Map<String, dynamic> _$WatchlistModelToJson(WatchlistModel instance) =>
+Map<String, dynamic> _$WatchListModelToJson(WatchListModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

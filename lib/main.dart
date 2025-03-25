@@ -29,10 +29,10 @@ void main() async {
 
   // Register Hive adapters
   Hive.registerAdapter(UserModelAdapter());
-  Hive.registerAdapter(WatchlistModelAdapter());
+  Hive.registerAdapter(WatchListModelAdapter());
 
   // Open Hive boxes
-  await Hive.openBox<WatchlistModel>(AppConstants.watchlistBox);
+  await Hive.openBox<WatchListModel>(AppConstants.watchlistBox);
   await Hive.openBox<UserModel>(AppConstants.userBox);
 
   // Initialize service locator
@@ -52,12 +52,12 @@ class MyApp extends StatelessWidget {
           create: (context) => sl<AuthBloc>()..add(AuthCheckStatusEvent()),
         ),
         BlocProvider<MutualFundBloc>(create: (context) => sl<MutualFundBloc>()),
-        BlocProvider<WatchlistBloc>(create: (context) => sl<WatchlistBloc>()),
+        BlocProvider<WatchListBloc>(create: (context) => sl<WatchListBloc>()),
       ],
       child: MaterialApp.router(
         scaffoldMessengerKey: SnackBarUtils.scaffoldMessengerKey,
         title: 'Khazana - Mutual Fund Analytics',
-        theme: AppTheme.lightTheme,
+        theme: AppTheme.darkTheme,
         debugShowCheckedModeBanner: false,
         routerConfig: appRouter,
         /*  builder:

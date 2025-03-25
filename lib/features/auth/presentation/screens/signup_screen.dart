@@ -45,7 +45,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.darkBackgroundColor,
       appBar: AppBar(title: const Text('Sign Up'), elevation: 0),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {

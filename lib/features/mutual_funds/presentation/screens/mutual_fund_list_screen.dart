@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:khazana_app/core/router/app_router.dart';
+import 'package:khazana_app/core/theme/app_theme.dart';
 import 'package:khazana_app/core/utils/progress_dialog.dart';
 import 'package:khazana_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
@@ -53,7 +54,7 @@ class _MutualFundListScreenState extends State<MutualFundListScreen> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppTheme.darkCardColor,
               ),
               onChanged: (value) {
                 setState(() {
@@ -78,7 +79,7 @@ class _MutualFundListScreenState extends State<MutualFundListScreen> {
           } else if (state is AuthUnauthenticatedState) {
             context.goNamed(Routes.loginRoute);
           } else if (state is AuthLoadingState) {
-            showProgressDialog(context);
+            // showProgressDialog(context);
           }
         },
         builder: (context, state) {

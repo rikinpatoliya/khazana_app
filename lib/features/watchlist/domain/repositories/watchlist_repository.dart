@@ -1,13 +1,13 @@
 import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
 
-abstract class WatchlistRepository {
-  Future<List<WatchlistModel>> getAllWatchlists();
-  Future<WatchlistModel?> getWatchlistById(String id);
-  Future<WatchlistModel> createWatchlist(String name);
-  Future<WatchlistModel> updateWatchlist(WatchlistModel watchlist);
-  Future<void> deleteWatchlist(String id);
-  Future<WatchlistModel> addFundToWatchlist(String watchlistId, String fundId);
-  Future<WatchlistModel> removeFundFromWatchlist(
+abstract class WatchListRepository {
+  Future<List<WatchListModel>> getAllWatchLists();
+  Future<WatchListModel?> getWatchListById(String id);
+  Future<WatchListModel> createWatchList(String name);
+  Future<WatchListModel> updateWatchList(WatchListModel watchlist);
+  Future<void> deleteWatchList(String id);
+  Future<WatchListModel> addFundToWatchList(String watchlistId, String fundId);
+  Future<WatchListModel> removeFundFromWatchList(
     String watchlistId,
     String fundId,
   );

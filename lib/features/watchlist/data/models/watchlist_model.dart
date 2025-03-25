@@ -5,7 +5,7 @@ part 'watchlist_model.g.dart';
 
 @JsonSerializable()
 @HiveType(typeId: 1)
-class WatchlistModel {
+class WatchListModel {
   @HiveField(0)
   final String id;
 
@@ -21,7 +21,7 @@ class WatchlistModel {
   @HiveField(4)
   final DateTime updatedAt;
 
-  WatchlistModel({
+  WatchListModel({
     required this.id,
     required this.name,
     required this.fundIds,
@@ -29,8 +29,8 @@ class WatchlistModel {
     required this.updatedAt,
   });
 
-  factory WatchlistModel.fromJson(Map<String, dynamic> json) =>
-      _$WatchlistModelFromJson(json);
+  factory WatchListModel.fromJson(Map<String, dynamic> json) =>
+      _$WatchListModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$WatchlistModelToJson(this);
+  Map<String, dynamic> toJson() => _$WatchListModelToJson(this);
 }

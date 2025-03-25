@@ -3,229 +3,231 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
 import 'package:khazana_app/features/watchlist/domain/repositories/watchlist_repository.dart';
 
-// Events
-abstract class WatchlistEvent extends Equatable {
-  const WatchlistEvent();
+// WatchList Events
+abstract class WatchListEvent extends Equatable {
+  const WatchListEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-class WatchlistLoadAllEvent extends WatchlistEvent {}
+class WatchListLoadAllEvent extends WatchListEvent {}
 
-class WatchlistLoadByIdEvent extends WatchlistEvent {
+class WatchListLoadByIdEvent extends WatchListEvent {
   final String id;
 
-  const WatchlistLoadByIdEvent(this.id);
+  const WatchListLoadByIdEvent(this.id);
 
   @override
   List<Object?> get props => [id];
 }
+//  ////////////////////////////////
 
-class WatchlistCreateEvent extends WatchlistEvent {
+class WatchListCreateEvent extends WatchListEvent {
   final String name;
 
-  const WatchlistCreateEvent(this.name);
+  const WatchListCreateEvent(this.name);
 
   @override
   List<Object?> get props => [name];
 }
 
-class WatchlistUpdateEvent extends WatchlistEvent {
-  final WatchlistModel watchlist;
+class WatchListUpdateEvent extends WatchListEvent {
+  final WatchListModel watchList;
 
-  const WatchlistUpdateEvent(this.watchlist);
+  const WatchListUpdateEvent(this.watchList);
 
   @override
-  List<Object?> get props => [watchlist];
+  List<Object?> get props => [watchList];
 }
 
-class WatchlistDeleteEvent extends WatchlistEvent {
+class WatchListDeleteEvent extends WatchListEvent {
   final String id;
 
-  const WatchlistDeleteEvent(this.id);
+  const WatchListDeleteEvent(this.id);
 
   @override
   List<Object?> get props => [id];
 }
 
-class WatchlistAddFundEvent extends WatchlistEvent {
-  final String watchlistId;
+class WatchListAddFundEvent extends WatchListEvent {
+  final String watchListId;
   final String fundId;
 
-  const WatchlistAddFundEvent(this.watchlistId, this.fundId);
+  const WatchListAddFundEvent(this.watchListId, this.fundId);
 
   @override
-  List<Object?> get props => [watchlistId, fundId];
+  List<Object?> get props => [watchListId, fundId];
 }
 
-class WatchlistRemoveFundEvent extends WatchlistEvent {
-  final String watchlistId;
+class WatchListRemoveFundEvent extends WatchListEvent {
+  final String watchListId;
   final String fundId;
 
-  const WatchlistRemoveFundEvent(this.watchlistId, this.fundId);
+  const WatchListRemoveFundEvent(this.watchListId, this.fundId);
 
   @override
-  List<Object?> get props => [watchlistId, fundId];
+  List<Object?> get props => [watchListId, fundId];
 }
 
 // States
-abstract class WatchlistState extends Equatable {
-  const WatchlistState();
+abstract class WatchListState extends Equatable {
+  const WatchListState();
 
   @override
   List<Object?> get props => [];
 }
 
-class WatchlistInitialState extends WatchlistState {}
+class WatchListInitialState extends WatchListState {}
 
-class WatchlistLoadingState extends WatchlistState {}
+class WatchListLoadingState extends WatchListState {}
 
-class WatchlistLoadedState extends WatchlistState {
-  final List<WatchlistModel> watchlists;
+class WatchListLoadedState extends WatchListState {
+  final List<WatchListModel> watchLists;
 
-  const WatchlistLoadedState(this.watchlists);
-
-  @override
-  List<Object?> get props => [watchlists];
-}
-
-class WatchlistDetailLoadedState extends WatchlistState {
-  final WatchlistModel watchlist;
-
-  const WatchlistDetailLoadedState(this.watchlist);
+  const WatchListLoadedState(this.watchLists);
 
   @override
-  List<Object?> get props => [watchlist];
+  List<Object?> get props => [watchLists];
 }
 
-class WatchlistErrorState extends WatchlistState {
+class WatchListDetailLoadedState extends WatchListState {
+  final WatchListModel watchList;
+
+  const WatchListDetailLoadedState(this.watchList);
+
+  @override
+  List<Object?> get props => [watchList];
+}
+
+class WatchListErrorState extends WatchListState {
   final String message;
 
-  const WatchlistErrorState(this.message);
+  const WatchListErrorState(this.message);
 
   @override
   List<Object?> get props => [message];
 }
 
 // BLoC
-class WatchlistBloc extends Bloc<WatchlistEvent, WatchlistState> {
-  final WatchlistRepository _watchlistRepository;
+class WatchListBloc extends Bloc<WatchListEvent, WatchListState> {
+  final WatchListRepository _watchListRepository;
 
-  WatchlistBloc(this._watchlistRepository) : super(WatchlistInitialState()) {
-    on<WatchlistLoadAllEvent>(_onLoadAll);
-    on<WatchlistLoadByIdEvent>(_onLoadById);
-    on<WatchlistCreateEvent>(_onCreate);
-    on<WatchlistUpdateEvent>(_onUpdate);
-    on<WatchlistDeleteEvent>(_onDelete);
-    on<WatchlistAddFundEvent>(_onAddFund);
-    on<WatchlistRemoveFundEvent>(_onRemoveFund);
+  WatchListBloc(this._watchListRepository) : super(WatchListInitialState()) {
+    on<WatchListLoadAllEvent>(_onLoadAll);
+    on<WatchListLoadByIdEvent>(_onLoadById);
+    on<WatchListCreateEvent>(_onCreate);
+    on<WatchListUpdateEvent>(_onUpdate);
+    on<WatchListDeleteEvent>(_onDelete);
+    on<WatchListAddFundEvent>(_onAddFund);
+    on<WatchListRemoveFundEvent>(_onRemoveFund);
   }
 
   Future<void> _onLoadAll(
-    WatchlistLoadAllEvent event,
-    Emitter<WatchlistState> emit,
+    WatchListLoadAllEvent event,
+    Emitter<WatchListState> emit,
   ) async {
-    emit(WatchlistLoadingState());
+    emit(WatchListLoadingState());
     try {
-      final watchlists = await _watchlistRepository.getAllWatchlists();
-      emit(WatchlistLoadedState(watchlists));
+      final watchLists = await _watchListRepository.getAllWatchLists();
+      emit(WatchListLoadedState(watchLists));
     } catch (e) {
-      emit(WatchlistErrorState(e.toString()));
+      emit(WatchListErrorState(e.toString()));
     }
   }
 
   Future<void> _onLoadById(
-    WatchlistLoadByIdEvent event,
-    Emitter<WatchlistState> emit,
+    WatchListLoadByIdEvent event,
+    Emitter<WatchListState> emit,
   ) async {
-    emit(WatchlistLoadingState());
+    emit(WatchListLoadingState());
     try {
-      final watchlist = await _watchlistRepository.getWatchlistById(event.id);
-      if (watchlist != null) {
-        emit(WatchlistDetailLoadedState(watchlist));
+      final watchList = await _watchListRepository.getWatchListById(event.id);
+      if (watchList != null) {
+        add(WatchListLoadAllEvent());
+        emit(WatchListDetailLoadedState(watchList));
       } else {
-        emit(const WatchlistErrorState('Watchlist not found'));
+        emit(const WatchListErrorState('WatchList not found'));
       }
     } catch (e) {
-      emit(WatchlistErrorState(e.toString()));
+      emit(WatchListErrorState(e.toString()));
     }
   }
 
   Future<void> _onCreate(
-    WatchlistCreateEvent event,
-    Emitter<WatchlistState> emit,
+    WatchListCreateEvent event,
+    Emitter<WatchListState> emit,
   ) async {
-    emit(WatchlistLoadingState());
+    emit(WatchListLoadingState());
     try {
-      final watchlist = await _watchlistRepository.createWatchlist(event.name);
-      emit(WatchlistDetailLoadedState(watchlist));
+      final watchList = await _watchListRepository.createWatchList(event.name);
+      emit(WatchListDetailLoadedState(watchList));
       add(
-        WatchlistLoadAllEvent(),
+        WatchListLoadAllEvent(),
       ); // Reload all watchlists after creating a new one
     } catch (e) {
-      emit(WatchlistErrorState(e.toString()));
+      emit(WatchListErrorState(e.toString()));
     }
   }
 
   Future<void> _onUpdate(
-    WatchlistUpdateEvent event,
-    Emitter<WatchlistState> emit,
+    WatchListUpdateEvent event,
+    Emitter<WatchListState> emit,
   ) async {
-    emit(WatchlistLoadingState());
+    emit(WatchListLoadingState());
     try {
-      final watchlist = await _watchlistRepository.updateWatchlist(
-        event.watchlist,
+      final watchList = await _watchListRepository.updateWatchList(
+        event.watchList,
       );
-      emit(WatchlistDetailLoadedState(watchlist));
-      add(WatchlistLoadAllEvent()); // Reload all watchlists after updating
+      emit(WatchListDetailLoadedState(watchList));
+      add(WatchListLoadAllEvent()); // Reload all watchlists after updating
     } catch (e) {
-      emit(WatchlistErrorState(e.toString()));
+      emit(WatchListErrorState(e.toString()));
     }
   }
 
   Future<void> _onDelete(
-    WatchlistDeleteEvent event,
-    Emitter<WatchlistState> emit,
+    WatchListDeleteEvent event,
+    Emitter<WatchListState> emit,
   ) async {
-    emit(WatchlistLoadingState());
+    emit(WatchListLoadingState());
     try {
-      await _watchlistRepository.deleteWatchlist(event.id);
-      add(WatchlistLoadAllEvent()); // Reload all watchlists after deleting
+      await _watchListRepository.deleteWatchList(event.id);
+      add(WatchListLoadAllEvent()); // Reload all watchlists after deleting
     } catch (e) {
-      emit(WatchlistErrorState(e.toString()));
+      emit(WatchListErrorState(e.toString()));
     }
   }
 
   Future<void> _onAddFund(
-    WatchlistAddFundEvent event,
-    Emitter<WatchlistState> emit,
+    WatchListAddFundEvent event,
+    Emitter<WatchListState> emit,
   ) async {
-    emit(WatchlistLoadingState());
+    emit(WatchListLoadingState());
     try {
-      final watchlist = await _watchlistRepository.addFundToWatchlist(
-        event.watchlistId,
+      final watchList = await _watchListRepository.addFundToWatchList(
+        event.watchListId,
         event.fundId,
       );
-      emit(WatchlistDetailLoadedState(watchlist));
+      emit(WatchListDetailLoadedState(watchList));
     } catch (e) {
-      emit(WatchlistErrorState(e.toString()));
+      emit(WatchListErrorState(e.toString()));
     }
   }
 
   Future<void> _onRemoveFund(
-    WatchlistRemoveFundEvent event,
-    Emitter<WatchlistState> emit,
+    WatchListRemoveFundEvent event,
+    Emitter<WatchListState> emit,
   ) async {
-    emit(WatchlistLoadingState());
+    emit(WatchListLoadingState());
     try {
-      final watchlist = await _watchlistRepository.removeFundFromWatchlist(
-        event.watchlistId,
+      final watchList = await _watchListRepository.removeFundFromWatchList(
+        event.watchListId,
         event.fundId,
       );
-      emit(WatchlistDetailLoadedState(watchlist));
+      emit(WatchListDetailLoadedState(watchList));
     } catch (e) {
-      emit(WatchlistErrorState(e.toString()));
+      emit(WatchListErrorState(e.toString()));
     }
   }
 }

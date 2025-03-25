@@ -12,15 +12,15 @@ import 'package:khazana_app/features/watchlist/data/repositories/watchlist_repos
 import 'package:khazana_app/features/watchlist/domain/repositories/watchlist_repository.dart';
 import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final GetIt sl = GetIt.instance;
 
 Future<void> initServiceLocator() async {
   // External Dependencies
-  final supabaseClient = supabase.Supabase.instance.client;
+  final supabaseClient = Supabase.instance.client;
   final sharedPreferences = await SharedPreferences.getInstance();
-  final watchlistBox = Hive.box<WatchlistModel>(AppConstants.watchlistBox);
+  final watchlistBox = Hive.box<WatchListModel>(AppConstants.watchlistBox);
 
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -31,7 +31,7 @@ Future<void> initServiceLocator() async {
     () => MutualFundRepositoryImpl(),
   );
 
-  sl.registerLazySingleton<WatchlistRepository>(
+  sl.registerLazySingleton<WatchListRepository>(
     () => WatchlistRepositoryImpl(watchlistBox),
   );
 
@@ -40,5 +40,5 @@ Future<void> initServiceLocator() async {
 
   sl.registerFactory(() => MutualFundBloc(sl<MutualFundRepository>()));
 
-  sl.registerFactory(() => WatchlistBloc(sl<WatchlistRepository>()));
+  sl.registerFactory(() => WatchListBloc(sl<WatchListRepository>()));
 }

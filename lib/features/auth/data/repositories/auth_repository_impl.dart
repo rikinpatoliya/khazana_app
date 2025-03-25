@@ -1,7 +1,6 @@
 import 'package:khazana_app/core/constants/app_constants.dart';
 import 'package:khazana_app/core/resources/api_response.dart';
 import 'package:khazana_app/features/auth/data/models/user_model.dart';
-import 'package:khazana_app/features/auth/domain/exceptions/auth_exceptions.dart';
 import 'package:khazana_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

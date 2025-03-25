@@ -14,6 +14,14 @@ class MutualFundModel {
   final double expenseRatio;
   @JsonKey(name: 'risk_level')
   final String riskLevel;
+  @JsonKey(name: 'invested_amount')
+  final double investedAmount;
+  @JsonKey(name: 'current_value')
+  final double currentValue;
+  @JsonKey(name: 'total_gain')
+  final double totalGain;
+  @JsonKey(name: 'total_change_percent')
+  final double totalChangePercent;
   final Returns returns;
   @JsonKey(name: 'nav_history')
   final List<NavHistory> navHistory;
@@ -27,6 +35,10 @@ class MutualFundModel {
     required this.aum,
     required this.expenseRatio,
     required this.riskLevel,
+    required this.currentValue,
+    required this.investedAmount,
+    required this.totalGain,
+    required this.totalChangePercent,
     required this.returns,
     required this.navHistory,
   });
