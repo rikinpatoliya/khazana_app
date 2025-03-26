@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:khazana_app/core/theme/app_theme.dart';
 import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
-import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
 import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_bloc.dart';
+import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_event.dart';
 
 class FundDetailScreen extends StatefulWidget {
   final MutualFundModel fund;
@@ -359,7 +359,7 @@ class _FundDetailScreenState extends State<FundDetailScreen> {
                 lineTouchData: LineTouchData(
                   enabled: true,
                   touchTooltipData: LineTouchTooltipData(
-                    tooltipBgColor: Colors.grey.shade800,
+                    // tooltipBgColor: Colors.grey.shade800,
                     getTooltipItems: (touchedSpots) {
                       return touchedSpots.map((touchedSpot) {
                         final index = touchedSpot.x.toInt();
@@ -667,7 +667,7 @@ class _FundDetailScreenState extends State<FundDetailScreen> {
 
 // Add this method to show watchlist selection dialog
 void _showAddToWatchlistDialog(BuildContext context, MutualFundModel fund) {
-  showDialog(
+  /*  showDialog(
     context: context,
     builder:
         (context) => BlocBuilder<WatchListBloc, WatchListState>(
@@ -758,5 +758,5 @@ void _showAddToWatchlistDialog(BuildContext context, MutualFundModel fund) {
             );
           },
         ),
-  );
+  ); */
 }

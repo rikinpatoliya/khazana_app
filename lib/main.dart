@@ -8,6 +8,7 @@ import 'package:khazana_app/core/theme/app_theme.dart';
 import 'package:khazana_app/core/utils/snackbar_utils.dart';
 import 'package:khazana_app/features/auth/data/models/user_model.dart';
 import 'package:khazana_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
 import 'package:khazana_app/features/mutual_funds/presentation/bloc/mutual_fund_bloc.dart';
 import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
 import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_bloc.dart';
@@ -30,9 +31,13 @@ void main() async {
   // Register Hive adapters
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(WatchListModelAdapter());
+  Hive.registerAdapter(MutualFundModelAdapter());
+  Hive.registerAdapter(ReturnsAdapter());
+  Hive.registerAdapter(NavHistoryAdapter());
 
   // Open Hive boxes
   await Hive.openBox<WatchListModel>(AppConstants.watchlistBox);
+  await Hive.openBox<MutualFundModel>(AppConstants.mutualFundBox);
   await Hive.openBox<UserModel>(AppConstants.userBox);
 
   // Initialize service locator

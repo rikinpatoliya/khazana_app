@@ -4,6 +4,7 @@ import 'package:khazana_app/core/constants/app_constants.dart';
 import 'package:khazana_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:khazana_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:khazana_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
 import 'package:khazana_app/features/mutual_funds/data/repositories/mutual_fund_repository_impl.dart';
 import 'package:khazana_app/features/mutual_funds/domain/repositories/mutual_fund_repository.dart';
 import 'package:khazana_app/features/mutual_funds/presentation/bloc/mutual_fund_bloc.dart';
@@ -21,6 +22,7 @@ Future<void> initServiceLocator() async {
   final supabaseClient = Supabase.instance.client;
   final sharedPreferences = await SharedPreferences.getInstance();
   final watchlistBox = Hive.box<WatchListModel>(AppConstants.watchlistBox);
+  final mutualFundBox = Hive.box<MutualFundModel>(AppConstants.mutualFundBox);
 
   // Repositories
   sl.registerLazySingleton<AuthRepository>(

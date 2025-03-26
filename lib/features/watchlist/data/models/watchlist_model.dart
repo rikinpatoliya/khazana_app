@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
 
 part 'watchlist_model.g.dart';
 
@@ -13,7 +14,7 @@ class WatchListModel {
   final String name;
 
   @HiveField(2)
-  final List<String> fundIds;
+  final List<MutualFundModel> fundIds;
 
   @HiveField(3)
   final DateTime createdAt;

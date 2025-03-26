@@ -3,6 +3,160 @@
 part of 'mutual_fund_model.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class MutualFundModelAdapter extends TypeAdapter<MutualFundModel> {
+  @override
+  final int typeId = 2;
+
+  @override
+  MutualFundModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return MutualFundModel(
+      id: fields[0] as String,
+      name: fields[1] as String,
+      category: fields[2] as String,
+      amc: fields[3] as String,
+      nav: fields[4] as double,
+      aum: fields[5] as double,
+      expenseRatio: fields[6] as double,
+      riskLevel: fields[7] as String,
+      currentValue: fields[9] as double,
+      investedAmount: fields[8] as double,
+      totalGain: fields[10] as double,
+      totalChangePercent: fields[11] as double,
+      returns: fields[12] as Returns,
+      navHistory: (fields[13] as List).cast<NavHistory>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, MutualFundModel obj) {
+    writer
+      ..writeByte(14)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.category)
+      ..writeByte(3)
+      ..write(obj.amc)
+      ..writeByte(4)
+      ..write(obj.nav)
+      ..writeByte(5)
+      ..write(obj.aum)
+      ..writeByte(6)
+      ..write(obj.expenseRatio)
+      ..writeByte(7)
+      ..write(obj.riskLevel)
+      ..writeByte(8)
+      ..write(obj.investedAmount)
+      ..writeByte(9)
+      ..write(obj.currentValue)
+      ..writeByte(10)
+      ..write(obj.totalGain)
+      ..writeByte(11)
+      ..write(obj.totalChangePercent)
+      ..writeByte(12)
+      ..write(obj.returns)
+      ..writeByte(13)
+      ..write(obj.navHistory);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MutualFundModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ReturnsAdapter extends TypeAdapter<Returns> {
+  @override
+  final int typeId = 3;
+
+  @override
+  Returns read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Returns(
+      oneYear: fields[0] as double,
+      threeYear: fields[1] as double,
+      fiveYear: fields[2] as double,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Returns obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.oneYear)
+      ..writeByte(1)
+      ..write(obj.threeYear)
+      ..writeByte(2)
+      ..write(obj.fiveYear);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ReturnsAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class NavHistoryAdapter extends TypeAdapter<NavHistory> {
+  @override
+  final int typeId = 4;
+
+  @override
+  NavHistory read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return NavHistory(
+      date: fields[0] as String,
+      value: fields[1] as double,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, NavHistory obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.date)
+      ..writeByte(1)
+      ..write(obj.value);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NavHistoryAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

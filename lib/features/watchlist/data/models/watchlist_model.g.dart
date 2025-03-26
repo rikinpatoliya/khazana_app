@@ -19,7 +19,7 @@ class WatchListModelAdapter extends TypeAdapter<WatchListModel> {
     return WatchListModel(
       id: fields[0] as String,
       name: fields[1] as String,
-      fundIds: (fields[2] as List).cast<String>(),
+      fundIds: (fields[2] as List).cast<MutualFundModel>(),
       createdAt: fields[3] as DateTime,
       updatedAt: fields[4] as DateTime,
     );
@@ -60,8 +60,9 @@ WatchListModel _$WatchListModelFromJson(Map<String, dynamic> json) =>
     WatchListModel(
       id: json['id'] as String,
       name: json['name'] as String,
-      fundIds:
-          (json['fundIds'] as List<dynamic>).map((e) => e as String).toList(),
+      fundIds: (json['fundIds'] as List<dynamic>)
+          .map((e) => MutualFundModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );

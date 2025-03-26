@@ -1,37 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:khazana_app/core/theme/app_theme.dart';
+import 'package:khazana_app/core/utils/progress_dialog.dart';
+import 'package:khazana_app/core/utils/ui_state.dart';
 import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
 import 'package:khazana_app/features/mutual_funds/presentation/bloc/mutual_fund_bloc.dart';
 import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
 import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_bloc.dart';
+import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_event.dart';
+import 'package:khazana_app/features/watchlist/presentation/bloc/watchlist_state.dart';
 
-class AddFundsToWatchlistScreen extends StatefulWidget {
-  final WatchListModel watchlist;
+class AddFundsToWatchListScreen extends StatefulWidget {
+  const AddFundsToWatchListScreen({super.key, this.watchList});
 
-  const AddFundsToWatchlistScreen({super.key, required this.watchlist});
-
+  final WatchListModel? watchList;
   @override
-  State<AddFundsToWatchlistScreen> createState() =>
-      _AddFundsToWatchlistScreenState();
+  State<AddFundsToWatchListScreen> createState() =>
+      _AddFundsToWatchListScreenState();
 }
 
-class _AddFundsToWatchlistScreenState extends State<AddFundsToWatchlistScreen>
+class _AddFundsToWatchListScreenState extends State<AddFundsToWatchListScreen>
     with SingleTickerProviderStateMixin {
   String _searchQuery = '';
-  String _selectedCategory = 'MF';
-  final List<String> _categories = ['#', 'MF', 'IPO', 'Events', 'Brands'];
   final TextEditingController _searchController = TextEditingController();
-  bool _showClearButton = false;
+  WatchListModel? _selectedWatchlist;
 
   @override
   void initState() {
     super.initState();
     context.read<MutualFundBloc>().add(MutualFundLoadAllEvent());
+
+    // Get the current state of the WatchListBloc to find the selected watchlist
+    // final watchlistState = context.read<WatchListBloc>().state;
+    // if (watchlistState.watchListDetailUiState is Success<WatchListModel>) {
+    //   _selectedWatchlist = (watchlistState as Success<WatchListModel>).data;
+    //   _selectedWatchlistId =
+    //       (watchlistState as Success<WatchListModel>).data?.id;
+    // } else {
+    //   //   // If no watchlist is selected, get all watchlists and select the first one
+    //   context.read<WatchListBloc>().add(WatchListLoadAllEvent());
+    // }
+
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text;
-        _showClearButton = _searchController.text.isNotEmpty;
       });
       context.read<MutualFundBloc>().add(
         MutualFundSearchEvent(_searchController.text),
@@ -58,175 +71,141 @@ class _AddFundsToWatchlistScreenState extends State<AddFundsToWatchlistScreen>
         title: _buildSearchBar(),
         titleSpacing: 0,
         actions: [
-          if (_showClearButton)
-            TextButton(
-              onPressed: () {
-                _searchController.clear();
-              },
-              child: const Text(
-                'Clear',
-                style: TextStyle(color: AppTheme.blueColor),
-              ),
-            ),
-        ],
-      ),
-      body: Column(
-        children: [_buildCategoryFilter(), Expanded(child: _buildFundsList())],
-      ),
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      height: 40,
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search eg: infy bse, nifty fut',
-          prefixIcon: const Icon(Icons.search, size: 20),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
-          contentPadding: const EdgeInsets.symmetric(vertical: 0.0),
-          filled: true,
-          fillColor: Colors.white,
-          isDense: true,
-        ),
-        style: const TextStyle(fontSize: 14),
-      ),
-    );
-  }
-
-  Widget _buildCategoryFilter() {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey, width: 0.5)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children:
-                    _categories.map((category) {
-                      final isSelected = _selectedCategory == category;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedCategory = category;
-                          });
-                          if (category != '#') {
-                            context.read<MutualFundBloc>().add(
-                              MutualFundLoadByCategoryEvent(category),
-                            );
-                          } else {
-                            context.read<MutualFundBloc>().add(
-                              MutualFundLoadAllEvent(),
-                            );
-                          }
-                        },
-                        child: Container(
-                          width: 80,
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          decoration: BoxDecoration(
-                            border:
-                                isSelected
-                                    ? const Border(
-                                      bottom: BorderSide(
-                                        color: AppTheme.blueColor,
-                                        width: 2.0,
-                                      ),
-                                    )
-                                    : null,
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            category,
-                            style: TextStyle(
-                              color:
-                                  isSelected
-                                      ? AppTheme.blueColor
-                                      : Colors.black87,
-                              fontWeight:
-                                  isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-              ),
+          // if (_showClearButton)
+          TextButton(
+            onPressed: () {
+              _searchController.clear();
+            },
+            child: const Text(
+              'Clear',
+              style: TextStyle(color: AppTheme.blueColor),
             ),
           ),
         ],
       ),
+      body: _buildFundsList(),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return TextField(
+      controller: _searchController,
+      decoration: InputDecoration(
+        hintText: 'Search funds...',
+        prefixIcon: const Icon(Icons.search),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        filled: true,
+        fillColor: AppTheme.darkCardColor,
+      ),
+      onChanged: (value) {
+        setState(() {
+          _searchQuery = value;
+        });
+        context.read<MutualFundBloc>().add(MutualFundSearchEvent(value));
+      },
     );
   }
 
   Widget _buildFundsList() {
-    return BlocBuilder<MutualFundBloc, MutualFundState>(
-      builder: (context, state) {
-        if (state is MutualFundLoadingState) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is MutualFundLoadedState) {
-          // Filter out funds that are already in the watchlist
-          final availableFunds =
-              state.funds
-                  .where((fund) => !widget.watchlist.fundIds.contains(fund.id))
-                  .toList();
-
-          // Apply category filter if not 'All'
-          final filteredFunds =
-              _selectedCategory == 'All'
-                  ? availableFunds
-                  : availableFunds
-                      .where((fund) => fund.category == _selectedCategory)
-                      .toList();
-
-          // Apply search filter if search query is not empty
-          final searchFilteredFunds =
-              _searchQuery.isEmpty
-                  ? filteredFunds
-                  : filteredFunds
-                      .where(
-                        (fund) => fund.name.toLowerCase().contains(
-                          _searchQuery.toLowerCase(),
-                        ),
-                      )
-                      .toList();
-
-          if (searchFilteredFunds.isEmpty) {
-            return const Center(
-              child: Text('No mutual funds available to add'),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16.0),
-            itemCount: searchFilteredFunds.length,
-            itemBuilder: (context, index) {
-              return _buildFundCard(searchFilteredFunds[index]);
-            },
+    return BlocConsumer<WatchListBloc, WatchListState1>(
+      listener: (context, state) {
+        if (state.addFundToWatchListUiState is Loading) {
+          showProgressDialog(context);
+        } else if (state.addFundToWatchListUiState is Failure) {
+          context.pop();
+          var reason = (state.addFundToWatchListUiState as Failure).reason;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(reason ?? "Something went wrong"),
+              duration: const Duration(seconds: 2),
+            ),
           );
-        } else if (state is MutualFundErrorState) {
-          return Center(
-            child: Text(
-              'Error: ${state.message}',
-              style: const TextStyle(color: Colors.red),
+        } else if (state.addFundToWatchListUiState is Success) {
+          context.pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('added from watchlist'),
+              duration: const Duration(seconds: 2),
             ),
           );
         }
-        return const SizedBox.shrink();
+
+        if (state.removeFundToWatchListUiState is Loading) {
+          showProgressDialog(context);
+        } else if (state.removeFundToWatchListUiState is Failure) {
+          context.pop();
+          var reason = (state.removeFundToWatchListUiState as Failure).reason;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(reason ?? "Something went wrong"),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        } else if (state.removeFundToWatchListUiState is Success) {
+          context.pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('removed from watchlist'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+      builder: (context, watchlistState) {
+        return BlocBuilder<MutualFundBloc, MutualFundState>(
+          builder: (context, state) {
+            if (state is MutualFundLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is MutualFundLoadedState) {
+              // Apply category filter if not 'All'
+
+              final filteredFunds = state.funds;
+
+              // Apply search filter if search query is not empty
+              final searchFilteredFunds =
+                  _searchQuery.isEmpty
+                      ? filteredFunds
+                      : filteredFunds
+                          .where(
+                            (fund) => fund.name.toLowerCase().contains(
+                              _searchQuery.toLowerCase(),
+                            ),
+                          )
+                          .toList();
+
+              if (searchFilteredFunds.isEmpty) {
+                return const Center(
+                  child: Text('No mutual funds available to add'),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: searchFilteredFunds.length,
+                itemBuilder: (context, index) {
+                  return _buildFundCard(searchFilteredFunds[index]);
+                },
+              );
+            } else if (state is MutualFundErrorState) {
+              return Center(
+                child: Text(
+                  'Error: ${state.message}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        );
       },
     );
   }
 
   Widget _buildFundCard(MutualFundModel fund) {
     // Determine if the fund is already in the watchlist
-    final bool isInWatchlist = widget.watchlist.fundIds.contains(fund.id);
+    final bool isInWatchlist =
+        widget.watchList?.fundIds.contains(fund) ?? false;
 
-    // Randomly assign NSE or BSE for demonstration purposes
     // In a real app, this would come from the fund data
     final String exchange = fund.id.hashCode % 2 == 0 ? 'NSE' : 'BSE';
     final Color exchangeColor =
@@ -286,35 +265,18 @@ class _AddFundsToWatchlistScreenState extends State<AddFundsToWatchlistScreen>
 
   void _addFundToWatchlist(MutualFundModel fund) {
     // Check if the fund is already in the watchlist
-    final bool isInWatchlist = widget.watchlist.fundIds.contains(fund.id);
+    final bool isInWatchlist = widget.watchList!.fundIds.contains(fund);
 
     if (isInWatchlist) {
       // Remove from watchlist
       context.read<WatchListBloc>().add(
-        WatchListRemoveFundEvent(widget.watchlist.id, fund.id),
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${fund.name} removed from watchlist'),
-          duration: const Duration(seconds: 2),
-        ),
+        WatchListRemoveFundEvent(widget.watchList!.id, fund.id),
       );
     } else {
       // Add to watchlist
       context.read<WatchListBloc>().add(
-        WatchListAddFundEvent(widget.watchlist.id, fund.id),
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${fund.name} added to watchlist'),
-          duration: const Duration(seconds: 2),
-        ),
+        WatchListAddFundEvent(widget.watchList!.id, fund),
       );
     }
-
-    // Force rebuild to update the UI
-    setState(() {});
   }
 }

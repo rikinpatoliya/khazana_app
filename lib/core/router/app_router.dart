@@ -5,6 +5,8 @@ import 'package:khazana_app/features/auth/presentation/screens/splash_screen.dar
 import 'package:khazana_app/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
 import 'package:khazana_app/features/mutual_funds/presentation/screens/fund_detail_screen.dart';
+import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
+import 'package:khazana_app/features/watchlist/presentation/screens/add_funds_to_watchlist_screen.dart';
 import 'package:khazana_app/features/watchlist/presentation/screens/watchlist_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -42,6 +44,15 @@ final GoRouter appRouter = GoRouter(
       name: Routes.watchlistRoute,
       builder: (context, state) => const WatchlistScreen(),
     ),
+    GoRoute(
+      path: Routes.addFundsToWatchListRoute,
+      name: Routes.addFundsToWatchListRoute,
+      builder: (context, state) {
+        return AddFundsToWatchListScreen(
+          watchList: state.extra as WatchListModel,
+        );
+      },
+    ),
   ],
 );
 
@@ -53,4 +64,5 @@ abstract class Routes {
   static const String dashboardRoute = '/dashboard';
   static const String fundDetailRoute = '/fund-detail';
   static const String watchlistRoute = '/watchlist';
+  static const String addFundsToWatchListRoute = '/addFundsToWatchList';
 }

@@ -7,7 +7,8 @@ class AppConstants {
   static const String mutualFundsDataPath = 'assets/data/mutual_funds.json';
 
   // Hive Constants
-  static const String watchlistBox = 'watchlist_box';
+  static const String watchlistBox = 'watchlist_box1';
+  static const String mutualFundBox = 'mutual_fund_box';
   static const String userBox = 'user_box';
 
   // Shared Preferences Keys

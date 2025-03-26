@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:khazana_app/features/mutual_funds/data/models/mutual_fund_model.dart';
 import 'package:khazana_app/features/watchlist/data/models/watchlist_model.dart';
 import 'package:khazana_app/features/watchlist/domain/repositories/watchlist_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -59,18 +60,19 @@ class WatchlistRepositoryImpl implements WatchListRepository {
   @override
   Future<WatchListModel> addFundToWatchList(
     String watchListId,
-    String fundId,
+    MutualFundModel mutualFundModel,
   ) async {
     final watchList = await getWatchListById(watchListId);
     if (watchList == null) {
       throw Exception('WatchList not found');
     }
 
-    if (watchList.fundIds.contains(fundId)) {
+    if (watchList.fundIds.contains(mutualFundModel)) {
       return watchList; // Fund already in watchlist
     }
 
-    final updatedFundIds = List<String>.from(watchList.fundIds)..add(fundId);
+    final updatedFundIds = List<MutualFundModel>.from(watchList.fundIds)
+      ..add(mutualFundModel);
     final updatedWatchList = WatchListModel(
       id: watchList.id,
       name: watchList.name,
@@ -97,7 +99,8 @@ class WatchlistRepositoryImpl implements WatchListRepository {
       return watchList; // Fund not in watchlist
     }
 
-    final updatedFundIds = List<String>.from(watchList.fundIds)..remove(fundId);
+    final updatedFundIds = List<MutualFundModel>.from(watchList.fundIds)
+      ..removeWhere((element) => element.id == fundId);
     final updatedWatchList = WatchListModel(
       id: watchList.id,
       name: watchList.name,
