@@ -8,8 +8,9 @@ A Flutter application for tracking and analyzing mutual fund investments with ad
 
 Check out this video demonstration of the Khazana app in action:
 
-[![Khazana App Demo]](https://youtube.com/shorts/mxUXaCXXLOg "Khazana App Demo")
+[[Khazana App Video]](https://youtube.com/shorts/mxUXaCXXLOg "Khazana App Demo")
 
+[[Khazana App Demo APK]](https://drive.google.com/file/d/1RRTJ8Z2veD6EVqRwX9GGsGrqD1GVW9Qz/view?usp=sharing "Khazana App Demo")
 
 ## Features
 
