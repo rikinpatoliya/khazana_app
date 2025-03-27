@@ -2,6 +2,15 @@
 
 A Flutter application for tracking and analyzing mutual fund investments with advanced performance analytics.
 
+## Demo
+
+### Video Demonstration
+
+Check out this video demonstration of the Khazana app in action:
+
+[![Khazana App Demo]](https://youtube.com/shorts/mxUXaCXXLOg "Khazana App Demo")
+
+
 ## Features
 
 ### Authentication
@@ -116,9 +125,6 @@ This approach ensures a unidirectional data flow and separation of concerns.
 - **Hive**: Local NoSQL database for offline capabilities
 - **Shared Preferences**: Simple key-value storage for app settings
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
