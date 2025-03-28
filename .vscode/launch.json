@@ -1,0 +1,83 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "prod Debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                // "--flavor",
+                // "prod",
+                "-t",
+                "lib/main.dart"
+            ],
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "prod Profile",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                // "--flavor",
+                // "prod",
+                "-t",
+                "lib/main.dart"
+            ],
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "prod Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                // "--flavor",
+                // "prod",
+                "-t",
+                "lib/main.dart"
+            ],
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "dev Debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                // "--flavor",
+                // "dev",
+                "-t",
+                "lib/main.dart"
+            ],
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "dev Profile",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                // "--flavor",
+                // "dev",
+                "-t",
+                "lib/main.dart"
+            ],
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "dev Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                // "--flavor",
+                // "dev",
+                "-t",
+                "lib/main.dart"
+            ],
+            "program": "lib/main.dart"
+        }
+    ]
+}

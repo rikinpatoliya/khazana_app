@@ -53,7 +53,7 @@ class _FundDetailScreenState extends State<FundDetailScreen> {
             ),
             onPressed: () {
               // Show dialog to select a watchlist
-              _showAddToWatchlistDialog(context, widget.fund);
+              // _showAddToWatchlistDialog(context, widget.fund);
             },
           ),
         ],

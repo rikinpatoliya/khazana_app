@@ -49,9 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
           if (state is AuthErrorState) {
             SnackBarUtils.showSnackBar(state.message);
           } else if (state is AuthAuthenticatedState) {
-            context.goNamed(Routes.dashboardRoute);
+            context.replaceNamed(Routes.dashboardRoute);
           } else if (state is AuthUnauthenticatedState) {
-            context.goNamed(Routes.loginRoute);
+            context.replaceNamed(Routes.loginRoute);
           }
         },
         builder: (context, state) {
@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  context.goNamed(Routes.signupRoute);
+                                  context.pushNamed(Routes.signupRoute);
                                 },
                                 child: const Text('Sign Up'),
                               ),

@@ -52,7 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
           if (state is AuthErrorState) {
             SnackBarUtils.showSnackBar(state.message);
           } else if (state is AuthAuthenticatedState) {
-            context.goNamed(Routes.dashboardRoute);
+            context.replaceNamed(Routes.dashboardRoute);
             // Navigator.pushReplacementNamed(
             //   context,
             //   AppConstants.dashboardRoute,
@@ -207,7 +207,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                  context.pop(context);
                                 },
                                 child: const Text('Login'),
                               ),
